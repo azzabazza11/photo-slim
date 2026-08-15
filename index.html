@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+  <meta name="theme-color" content="#1a1612" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Photo Slim" />
+  <meta name="description" content="Shrink gallery photos for sending — smaller pixels and smaller files, on your phone." />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="./icon.svg" />
+  <title>Photo Slim</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg0: #1a1612;
+      --bg1: #241e18;
+      --panel: #342b22;
+      --ink: #f3ebe0;
+      --muted: #b5a794;
+      --timber: #c4a574;
+      --timber-hot: #e0c08a;
+      --ok: #7cb87a;
+      --bad: #d9785c;
+      --line: rgba(243, 235, 224, 0.12);
+      --safe-t: env(safe-area-inset-top, 0px);
+      --safe-b: env(safe-area-inset-bottom, 0px);
+      --safe-l: env(safe-area-inset-left, 0px);
+      --safe-r: env(safe-area-inset-right, 0px);
+      --radius: 18px;
+      --tap: 48px;
+      --bar-h: 92px;
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(120% 80% at 10% -10%, #3a2f24 0%, transparent 55%),
+        linear-gradient(180deg, var(--bg1), var(--bg0));
+      color: var(--ink);
+      font-family: "Archivo", system-ui, sans-serif;
+      font-weight: 500;
+    }
+    body {
+      padding:
+        calc(12px + var(--safe-t))
+        calc(16px + var(--safe-r))
+        calc(var(--bar-h) + 16px + var(--safe-b))
+        calc(16px + var(--safe-l));
+    }
+    button, input, select { font: inherit; color: inherit; }
+    button { cursor: pointer; border: 0; background: none; }
+    .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; }
+
+    .topbar {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 14px; min-height: var(--tap);
+    }
+    .topbar h1 {
+      margin: 0; flex: 1; font-size: 1.35rem; font-weight: 800; letter-spacing: -0.02em;
+    }
+    .brand-mark {
+      width: 40px; height: 40px; border-radius: 12px;
+      background: linear-gradient(145deg, #3a3026, #1f1a15);
+      border: 1px solid var(--line);
+      display: grid; place-items: center; flex-shrink: 0;
+    }
+    .brand-mark svg { width: 26px; height: 26px; }
+
+    .btn {
+      min-height: var(--tap); padding: 0 16px; border-radius: 14px;
+      background: var(--panel); border: 1px solid var(--line); font-weight: 700;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn-primary {
+      background: linear-gradient(180deg, var(--timber-hot), var(--timber));
+      color: #1a140e; border-color: transparent;
+    }
+    .btn:disabled { opacity: 0.45; pointer-events: none; }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 10px; }
+    .btn-file { display: inline-flex; align-items: center; justify-content: center; }
+
+    .lede { margin: 0 0 14px; color: var(--muted); line-height: 1.4; }
+    .card {
+      background: rgba(52, 43, 34, 0.72);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      margin-bottom: 14px;
+    }
+    .card h3 {
+      margin: 0 0 8px; font-size: 0.78rem; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--muted); font-weight: 700;
+    }
+    .help p { margin: 0 0 8px; color: var(--muted); font-size: 0.95rem; line-height: 1.4; }
+    .help p:last-child { margin-bottom: 0; }
+    .help strong { color: var(--ink); }
+
+    .presets {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+    }
+    .preset {
+      text-align: left; padding: 12px 12px 10px; border-radius: 14px;
+      background: #16120e; border: 1px solid var(--line); min-height: 72px;
+    }
+    .preset.active {
+      border-color: var(--timber);
+      box-shadow: 0 0 0 1px var(--timber);
+    }
+    .preset strong { display: block; font-weight: 800; margin-bottom: 4px; }
+    .preset span { color: var(--muted); font-size: 0.82rem; line-height: 1.3; }
+
+    .custom { display: none; margin-top: 12px; }
+    .custom.show { display: block; }
+    .field { margin-bottom: 10px; }
+    .field label {
+      display: flex; justify-content: space-between; font-size: 0.88rem;
+      color: var(--muted); font-weight: 700; margin-bottom: 6px;
+    }
+    .field input[type="range"] { width: 100%; accent-color: var(--timber); }
+    .field input[type="number"] {
+      width: 100%; min-height: 44px; padding: 0 12px; border-radius: 12px;
+      border: 1px solid var(--line); background: #16120e;
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+    }
+
+    .meter { height: 10px; border-radius: 999px; background: #16120e; overflow: hidden; margin-top: 8px; }
+    .meter > i { display: block; height: 100%; width: 0; background: var(--timber); }
+    .meter.hot > i { background: var(--bad); }
+    .meter-lbl { display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--muted); margin-top: 6px; }
+
+    .grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    }
+    .tile {
+      background: #16120e; border: 1px solid var(--line); border-radius: 14px;
+      overflow: hidden; text-align: left; padding: 0;
+    }
+    .tile img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; background: #0d0b09; }
+    .tile .meta { padding: 8px 10px 10px; font-size: 0.75rem; line-height: 1.35; color: var(--muted); }
+    .tile .meta b { color: var(--ink); display: block; font-size: 0.82rem; margin-bottom: 2px; }
+    .badge {
+      display: inline-block; margin-top: 4px; padding: 2px 7px; border-radius: 999px;
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+      background: rgba(124,184,122,.18); color: var(--ok);
+    }
+    .badge.warn { background: rgba(217,120,92,.18); color: var(--bad); }
+
+    .empty {
+      text-align: center; color: var(--muted); padding: 28px 12px;
+      border: 1px dashed var(--line); border-radius: var(--radius);
+    }
+
+    .dock {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
+      padding: 10px calc(16px + var(--safe-r)) calc(10px + var(--safe-b)) calc(16px + var(--safe-l));
+      background: rgba(26, 22, 18, 0.94);
+      border-top: 1px solid var(--line);
+      backdrop-filter: blur(10px);
+    }
+    .dock .sum { font-size: 0.9rem; margin-bottom: 8px; }
+    .dock .sum strong { color: var(--timber-hot); }
+    .ver { margin-top: 10px; color: var(--muted); font-size: 0.75rem; opacity: 0.7; }
+
+    /* Compare overlay */
+    #compare {
+      display: none; position: fixed; inset: 0; z-index: 40;
+      background: #0d0b09;
+      padding: calc(10px + var(--safe-t)) 12px calc(12px + var(--safe-b));
+      flex-direction: column;
+    }
+    #compare.open { display: flex; }
+    .cmp-top { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .cmp-top h2 { margin: 0; flex: 1; font-size: 1.05rem; }
+    .stage {
+      position: relative; flex: 1; min-height: 0;
+      border-radius: 16px; overflow: hidden; background: #000;
+      touch-action: none;
+    }
+    .stage img {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: contain; pointer-events: none;
+    }
+    .before-clip {
+      position: absolute; inset: 0 auto 0 0; width: 50%; overflow: hidden;
+      border-right: 2px solid var(--timber-hot);
+    }
+    .before-clip img { width: 100vw; max-width: none; left: 0; }
+    .wipe {
+      position: absolute; top: 0; bottom: 0; left: 50%; width: 28px; margin-left: -14px;
+      display: grid; place-items: center; pointer-events: none;
+    }
+    .wipe i {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--timber-hot); color: #1a140e;
+      display: grid; place-items: center; font-weight: 800; font-size: 12px;
+    }
+    .cmp-stats { margin-top: 10px; font-size: 0.85rem; color: var(--muted); line-height: 1.4; }
+    .cmp-stats strong { color: var(--ink); }
+    .cmp-hint { margin: 6px 0 0; font-size: 0.78rem; color: var(--muted); }
+
+    @media (min-width: 720px) {
+      body { max-width: 560px; margin: 0 auto; }
+      .grid { grid-template-columns: 1fr 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand-mark" aria-hidden="true">
+      <svg viewBox="0 0 32 32" fill="none">
+        <rect x="5" y="8" width="18" height="16" rx="3" stroke="#c4a574" stroke-width="2"/>
+        <path d="M22 6l5 2-2 5" stroke="#e0c08a" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <h1>Photo Slim</h1>
+  </div>
+  <p class="lede">Pick photos, pick a send size, check the preview, then share or zip. Files stay on this phone.</p>
+
+  <div class="card help">
+    <h3>Pixels vs file size</h3>
+    <p><strong>Pixels</strong> are width × height (a 12&nbsp;MP shot is often ~4000×3000). Scaling the long edge down is the big win for sending.</p>
+    <p><strong>File size</strong> is megabytes on disk. JPEG quality packs the same pixels tighter. Chat/email usually need both knobs.</p>
+  </div>
+
+  <div class="card">
+    <h3>Send as</h3>
+    <div class="presets" id="presets"></div>
+    <div class="custom" id="custom">
+      <div class="field">
+        <label>Long edge <span class="mono" id="edge-val">1600 px</span></label>
+        <input id="edge" type="range" min="640" max="4096" step="16" value="1600" />
+      </div>
+      <div class="field">
+        <label>JPEG quality <span class="mono" id="qual-val">0.75</span></label>
+        <input id="qual" type="range" min="0.40" max="0.92" step="0.01" value="0.75" />
+      </div>
+      <div class="field">
+        <label for="maxkb">Max KB each (optional)</label>
+        <input id="maxkb" type="number" inputmode="numeric" min="50" step="50" placeholder="e.g. 400" />
+      </div>
+    </div>
+  </div>
+
+  <div class="btn-row" style="margin-bottom:14px">
+    <label class="btn btn-primary btn-file">
+      Add photos
+      <input id="file" type="file" accept="image/*" multiple hidden />
+    </label>
+    <button type="button" class="btn" id="btn-clear">Clear</button>
+    <button type="button" class="btn" id="btn-reload">Reload</button>
+  </div>
+
+  <div class="card" id="batch-card" hidden>
+    <h3>Batch</h3>
+    <div class="sum mono" id="batch-line">—</div>
+    <div class="meter" id="meter"><i></i></div>
+    <div class="meter-lbl"><span>0</span><span>10 MB chat-ish</span><span>25 MB email-ish</span></div>
+  </div>
+
+  <div id="empty" class="empty">No photos yet. Add from the gallery.</div>
+  <div class="grid" id="grid"></div>
+  <p class="ver mono">v1.0.0 · on-device only</p>
+
+  <div class="dock">
+    <div class="sum" id="dock-sum">Add photos to slim them.</div>
+    <div class="btn-row">
+      <button type="button" class="btn btn-primary" id="btn-share" disabled>Share</button>
+      <button type="button" class="btn" id="btn-zip" disabled>Zip</button>
+      <button type="button" class="btn" id="btn-share-zip" disabled>Share zip</button>
+    </div>
+  </div>
+
+  <div id="compare" aria-modal="true" role="dialog">
+    <div class="cmp-top">
+      <button type="button" class="btn" id="cmp-close">Close</button>
+      <h2>Before / after</h2>
+      <button type="button" class="btn" id="cmp-hold">Hold original</button>
+    </div>
+    <div class="stage" id="stage">
+      <img id="img-after" alt="After" />
+      <div class="before-clip" id="before-clip">
+        <img id="img-before" alt="Before" />
+      </div>
+      <div class="wipe" id="wipe"><i>↔</i></div>
+    </div>
+    <div class="cmp-stats" id="cmp-stats"></div>
+    <p class="cmp-hint">Drag to wipe. Both pictures are shown at the same size — that’s how they’ll look when sent.</p>
+  </div>
+
+  <script>
+  (() => {
+    const APP_VER = '1.0.0';
+    const PRESETS = {
+      chat: { id: 'chat', label: 'Chat', longEdge: 1600, quality: 0.72, keepPixels: false, blurb: 'Fine for messaging.' },
+      email: { id: 'email', label: 'Email', longEdge: 2048, quality: 0.80, keepPixels: false, blurb: 'Good on a computer.' },
+      screen: { id: 'screen', label: 'Screen', longEdge: 1080, quality: 0.78, keepPixels: false, blurb: 'Matches most phones.' },
+      fileonly: { id: 'fileonly', label: 'File only', longEdge: 99999, quality: 0.65, keepPixels: true, blurb: 'Keep pixels, pack tighter.' },
+      custom: { id: 'custom', label: 'Custom', longEdge: 1600, quality: 0.75, keepPixels: false, blurb: 'You set the knobs.' }
+    };
+
+    let presetId = 'chat';
+    let items = [];
+    let encodeGen = 0;
+    let zipBlob = null;
+    let compareItem = null;
+    let wipePct = 50;
+    let holdingOrig = false;
+
+    const $ = id => document.getElementById(id);
+    const fileInput = $('file');
+    const grid = $('grid');
+    const empty = $('empty');
+    const customEl = $('custom');
+
+    function fmtBytes(n) {
+      if (!Number.isFinite(n)) return '—';
+      if (n < 1024) return n + ' B';
+      if (n < 1024 * 1024) return (n / 1024).toFixed(n < 10 * 1024 ? 1 : 0) + ' KB';
+      return (n / (1024 * 1024)).toFixed(n < 10 * 1024 * 1024 ? 2 : 1) + ' MB';
+    }
+    function mp(w, h) { return ((w * h) / 1e6).toFixed(1) + ' MP'; }
+    function pxLine(w, h) { return `${w} × ${h} (${mp(w, h)})`; }
+
+    function currentSettings() {
+      if (presetId === 'custom') {
+        return {
+          longEdge: parseInt($('edge').value, 10) || 1600,
+          quality: parseFloat($('qual').value) || 0.75,
+          keepPixels: false,
+          maxKb: parseFloat($('maxkb').value) || 0
+        };
+      }
+      const p = PRESETS[presetId];
+      return { longEdge: p.longEdge, quality: p.quality, keepPixels: p.keepPixels, maxKb: 0 };
+    }
+
+    function destSize(w, h, longEdge, keepPixels) {
+      if (keepPixels) return { w, h };
+      const long = Math.max(w, h);
+      if (long <= longEdge) return { w, h };
+      const s = longEdge / long;
+      return { w: Math.max(1, Math.round(w * s)), h: Math.max(1, Math.round(h * s)) };
+    }
+
+    function uniqueName(base, used) {
+      const dot = base.lastIndexOf('.');
+      const stem = (dot > 0 ? base.slice(0, dot) : base).replace(/[^\w.-]+/g, '_') || 'photo';
+      let name = stem + '.jpg';
+      let n = 2;
+      while (used.has(name.toLowerCase())) {
+        name = `${stem}-${n}.jpg`;
+        n += 1;
+      }
+      used.add(name.toLowerCase());
+      return name;
+    }
+
+    async function loadBitmap(file) {
+      if (typeof createImageBitmap === 'function') {
+        try {
+          return await createImageBitmap(file, { imageOrientation: 'from-image' });
+        } catch (_) {
+          return await createImageBitmap(file);
+        }
+      }
+      const url = URL.createObjectURL(file);
+      try {
+        const img = await new Promise((res, rej) => {
+          const i = new Image();
+          i.onload = () => res(i);
+          i.onerror = () => rej(new Error('decode'));
+          i.src = url;
+        });
+        return img;
+      } finally {
+        URL.revokeObjectURL(url);
+      }
+    }
+
+    function makeThumb(bmp) {
+      const max = 320;
+      const s = Math.min(1, max / Math.max(bmp.width, bmp.height));
+      const w = Math.max(1, Math.round(bmp.width * s));
+      const h = Math.max(1, Math.round(bmp.height * s));
+      const c = document.createElement('canvas');
+      c.width = w; c.height = h;
+      c.getContext('2d').drawImage(bmp, 0, 0, w, h);
+      return c.toDataURL('image/jpeg', 0.7);
+    }
+
+    function canvasToBlob(canvas, type, quality) {
+      return new Promise(resolve => canvas.toBlob(resolve, type, quality));
+    }
+
+    async function encodeOne(item, settings, gen) {
+      const bmp = await loadBitmap(item.file);
+      if (gen !== encodeGen) { bmp.close && bmp.close(); return; }
+      const dw = destSize(bmp.width, bmp.height, settings.longEdge, settings.keepPixels);
+      item.origW = bmp.width;
+      item.origH = bmp.height;
+
+      const skipResize = dw.w === bmp.width && dw.h === bmp.height;
+
+      const canvas = document.createElement('canvas');
+      canvas.width = dw.w;
+      canvas.height = dw.h;
+      const ctx = canvas.getContext('2d', { alpha: false });
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(bmp, 0, 0, dw.w, dw.h);
+      bmp.close && bmp.close();
+
+      let quality = settings.quality;
+      let blob = await canvasToBlob(canvas, 'image/jpeg', quality);
+      if (!blob) throw new Error('encode failed');
+
+      if (settings.maxKb > 0) {
+        const cap = settings.maxKb * 1024;
+        while (blob.size > cap && quality > 0.4) {
+          quality = Math.max(0.4, quality - 0.07);
+          blob = await canvasToBlob(canvas, 'image/jpeg', quality);
+        }
+      }
+
+      if (blob.size >= item.origBytes && skipResize) {
+        item.outW = item.origW;
+        item.outH = item.origH;
+        item.outBytes = item.origBytes;
+        item.outBlob = item.file;
+        item.keptOriginal = true;
+        item.outName = item.file.name;
+      } else {
+        item.outW = dw.w;
+        item.outH = dw.h;
+        item.outBytes = blob.size;
+        item.outBlob = blob;
+        item.keptOriginal = false;
+        item.outName = item.file.name.replace(/\.[^.]+$/, '') + '.jpg';
+      }
+      item.status = 'done';
+    }
+
+    async function pumpEncode() {
+      const gen = ++encodeGen;
+      zipBlob = null;
+      const settings = currentSettings();
+      for (const it of items) {
+        if (it.status === 'error') continue;
+        it.status = 'pending';
+        it.keptOriginal = false;
+        it.outBlob = null;
+      }
+      renderGrid();
+      updateDock();
+      for (const it of items) {
+        if (gen !== encodeGen) return;
+        it.status = 'encoding';
+        renderGrid();
+        try {
+          await encodeOne(it, settings, gen);
+        } catch (err) {
+          it.status = 'error';
+          it.error = 'Could not read this image (HEIC needs a recent Chrome).';
+        }
+        if (gen !== encodeGen) return;
+        renderGrid();
+        updateDock();
+      }
+    }
+
+    function renderPresets() {
+      $('presets').innerHTML = Object.values(PRESETS).map(p => `
+        <button type="button" class="preset${p.id === presetId ? ' active' : ''}" data-preset="${p.id}">
+          <strong>${p.label}</strong>
+          <span>${p.blurb}</span>
+        </button>`).join('');
+      customEl.classList.toggle('show', presetId === 'custom');
+    }
+
+    function renderGrid() {
+      empty.hidden = items.length > 0;
+      grid.innerHTML = items.map(it => {
+        const out = it.status === 'done'
+          ? `${pxLine(it.outW, it.outH)} · ${fmtBytes(it.outBytes)}`
+          : (it.status === 'encoding' ? 'shrinking…' : it.status === 'error' ? it.error : 'waiting…');
+        const badge = it.status === 'done' && it.keptOriginal
+          ? '<span class="badge">already small</span>'
+          : (it.status === 'error' ? '<span class="badge warn">skipped</span>' : '');
+        return `<button type="button" class="tile" data-id="${it.id}">
+          <img src="${it.thumbUrl}" alt="">
+          <div class="meta">
+            <b>${pxLine(it.origW || 0, it.origH || 0)} · ${fmtBytes(it.origBytes)}</b>
+            → ${out}
+            ${badge}
+          </div>
+        </button>`;
+      }).join('');
+    }
+
+    function totals() {
+      const done = items.filter(i => i.status === 'done');
+      const orig = items.reduce((s, i) => s + i.origBytes, 0);
+      const out = done.reduce((s, i) => s + i.outBytes, 0);
+      return { orig, out, done: done.length, n: items.length, ready: done.length === items.length && items.length > 0 };
+    }
+
+    function updateDock() {
+      const t = totals();
+      $('batch-card').hidden = items.length === 0;
+      const line = items.length
+        ? `${t.n} photos · ${fmtBytes(t.orig)} → ${t.done === t.n ? fmtBytes(t.out) : '…'}`
+        : 'Add photos to slim them.';
+      $('batch-line').textContent = line;
+      $('dock-sum').innerHTML = items.length
+        ? `<strong>${t.n}</strong> photos · <strong>${fmtBytes(t.orig)}</strong> → <strong>${t.done === t.n ? fmtBytes(t.out) : 'encoding…'}</strong>`
+        : 'Add photos to slim them.';
+      const frac = Math.min(1, (t.done === t.n ? t.out : t.orig) / (25 * 1024 * 1024));
+      const meter = $('meter');
+      meter.classList.toggle('hot', (t.done === t.n ? t.out : t.orig) > 10 * 1024 * 1024);
+      meter.querySelector('i').style.width = (frac * 100) + '%';
+      const ready = t.ready;
+      $('btn-share').disabled = !ready;
+      $('btn-zip').disabled = !ready;
+      $('btn-share-zip').disabled = !ready;
+    }
+
+    $('presets').addEventListener('click', e => {
+      const btn = e.target.closest('[data-preset]');
+      if (!btn) return;
+      presetId = btn.getAttribute('data-preset');
+      renderPresets();
+      if (items.length) pumpEncode();
+    });
+
+    ['edge', 'qual', 'maxkb'].forEach(id => {
+      $(id).addEventListener('input', () => {
+        $('edge-val').textContent = $('edge').value + ' px';
+        $('qual-val').textContent = parseFloat($('qual').value).toFixed(2);
+        if (presetId === 'custom' && items.length) pumpEncode();
+      });
+    });
+
+    fileInput.addEventListener('change', async () => {
+      const files = [...fileInput.files];
+      fileInput.value = '';
+      for (const file of files) {
+        if (!file.type.startsWith('image/') && !/\.(jpe?g|png|webp|gif|heic|heif)$/i.test(file.name)) continue;
+        const id = crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random();
+        const it = {
+          id, file, origBytes: file.size, origW: 0, origH: 0,
+          thumbUrl: '', status: 'pending', error: ''
+        };
+        try {
+          const bmp = await loadBitmap(file);
+          it.origW = bmp.width;
+          it.origH = bmp.height;
+          it.thumbUrl = makeThumb(bmp);
+          bmp.close && bmp.close();
+        } catch (_) {
+          it.status = 'error';
+          it.error = 'Could not read this image.';
+          it.thumbUrl = '';
+        }
+        items.push(it);
+      }
+      renderGrid();
+      updateDock();
+      pumpEncode();
+    });
+
+    $('btn-clear').addEventListener('click', () => {
+      encodeGen += 1;
+      items = [];
+      zipBlob = null;
+      renderGrid();
+      updateDock();
+    });
+
+    grid.addEventListener('click', e => {
+      const btn = e.target.closest('.tile');
+      if (!btn) return;
+      const it = items.find(x => x.id === btn.getAttribute('data-id'));
+      if (it) openCompare(it);
+    });
+
+    function fitBeforeClip() {
+      const stage = $('stage');
+      const clip = $('before-clip');
+      const imgB = $('img-before');
+      const w = stage.clientWidth;
+      clip.style.width = wipePct + '%';
+      imgB.style.width = w + 'px';
+      imgB.style.height = stage.clientHeight + 'px';
+      $('wipe').style.left = wipePct + '%';
+    }
+
+    function openCompare(it) {
+      if (it.status !== 'done') return;
+      compareItem = it;
+      wipePct = 50;
+      holdingOrig = false;
+      const beforeUrl = URL.createObjectURL(it.file);
+      const afterUrl = URL.createObjectURL(it.outBlob);
+      $('img-before').src = beforeUrl;
+      $('img-after').src = afterUrl;
+      $('compare').classList.add('open');
+      $('cmp-stats').innerHTML =
+        `<strong>Before</strong> ${pxLine(it.origW, it.origH)} · ${fmtBytes(it.origBytes)}<br>` +
+        `<strong>After</strong> ${pxLine(it.outW, it.outH)} · ${fmtBytes(it.outBytes)}` +
+        (it.keptOriginal ? ' · kept original' : '');
+      requestAnimationFrame(fitBeforeClip);
+      const revoke = () => {
+        URL.revokeObjectURL(beforeUrl);
+        URL.revokeObjectURL(afterUrl);
+      };
+      $('compare')._revoke = revoke;
+    }
+
+    function closeCompare() {
+      $('compare').classList.remove('open');
+      if ($('compare')._revoke) $('compare')._revoke();
+      compareItem = null;
+    }
+    $('cmp-close').addEventListener('click', closeCompare);
+
+    const stage = $('stage');
+    function setWipeFromX(clientX) {
+      const r = stage.getBoundingClientRect();
+      wipePct = Math.max(2, Math.min(98, ((clientX - r.left) / r.width) * 100));
+      if (!holdingOrig) fitBeforeClip();
+    }
+    stage.addEventListener('pointerdown', e => {
+      stage.setPointerCapture(e.pointerId);
+      setWipeFromX(e.clientX);
+    });
+    stage.addEventListener('pointermove', e => {
+      if (e.buttons || e.pressure > 0) setWipeFromX(e.clientX);
+    });
+
+    $('cmp-hold').addEventListener('pointerdown', e => {
+      e.preventDefault();
+      holdingOrig = true;
+      wipePct = 100;
+      fitBeforeClip();
+    });
+    const endHold = () => {
+      if (!holdingOrig) return;
+      holdingOrig = false;
+      wipePct = 50;
+      fitBeforeClip();
+    };
+    $('cmp-hold').addEventListener('pointerup', endHold);
+    $('cmp-hold').addEventListener('pointercancel', endHold);
+    $('cmp-hold').addEventListener('pointerleave', endHold);
+    addEventListener('resize', () => { if (compareItem) fitBeforeClip(); });
+
+    function readyFiles() {
+      const used = new Set();
+      return items.filter(i => i.status === 'done').map(i => {
+        const name = uniqueName(i.outName || i.file.name, used);
+        const type = i.outBlob.type || 'image/jpeg';
+        return new File([i.outBlob], name, { type });
+      });
+    }
+
+    async function canShareFiles(files) {
+      try {
+        return !!(navigator.share && navigator.canShare && navigator.canShare({ files }));
+      } catch (_) { return false; }
+    }
+
+    $('btn-share').addEventListener('click', async () => {
+      const files = readyFiles();
+      if (!files.length) return;
+      if (await canShareFiles(files)) {
+        try { await navigator.share({ files, title: 'Photo Slim' }); return; } catch (e) { if (e && e.name === 'AbortError') return; }
+      }
+      for (const f of files) downloadBlob(f, f.name);
+    });
+
+    async function makeZip() {
+      if (zipBlob) return zipBlob;
+      const files = readyFiles();
+      const entries = [];
+      for (const f of files) {
+        entries.push({ name: f.name, data: new Uint8Array(await f.arrayBuffer()) });
+      }
+      zipBlob = zipStore(entries);
+      return zipBlob;
+    }
+
+    $('btn-zip').addEventListener('click', async () => {
+      const blob = await makeZip();
+      downloadBlob(blob, 'photos-slim.zip');
+    });
+
+    $('btn-share-zip').addEventListener('click', async () => {
+      const blob = await makeZip();
+      const file = new File([blob], 'photos-slim.zip', { type: 'application/zip' });
+      if (await canShareFiles([file])) {
+        try { await navigator.share({ files: [file], title: 'Photo Slim zip' }); return; } catch (e) { if (e && e.name === 'AbortError') return; }
+      }
+      downloadBlob(blob, 'photos-slim.zip');
+    });
+
+    function downloadBlob(blob, name) {
+      const a = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      a.href = url; a.download = name;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
+    }
+
+    /* ZIP stored (no deflate) — JPEGs barely shrink anyway */
+    const CRC_TABLE = (() => {
+      const t = new Uint32Array(256);
+      for (let i = 0; i < 256; i++) {
+        let c = i;
+        for (let k = 0; k < 8; k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+        t[i] = c >>> 0;
+      }
+      return t;
+    })();
+    function crc32(u8) {
+      let c = 0xFFFFFFFF;
+      for (let i = 0; i < u8.length; i++) c = CRC_TABLE[(c ^ u8[i]) & 0xFF] ^ (c >>> 8);
+      return (c ^ 0xFFFFFFFF) >>> 0;
+    }
+    function u16(n) { return new Uint8Array([n & 255, (n >>> 8) & 255]); }
+    function u32(n) { return new Uint8Array([n & 255, (n >>> 8) & 255, (n >>> 16) & 255, (n >>> 24) & 255]); }
+    function zipStore(entries) {
+      const enc = new TextEncoder();
+      const parts = [];
+      const centrals = [];
+      let offset = 0;
+      for (const e of entries) {
+        const name = enc.encode(e.name);
+        const data = e.data;
+        const crc = crc32(data);
+        const local = new Uint8Array(30 + name.length);
+        local.set([0x50, 0x4b, 0x03, 0x04, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0], 0);
+        local.set(u32(crc), 14);
+        local.set(u32(data.length), 18);
+        local.set(u32(data.length), 22);
+        local.set(u16(name.length), 26);
+        local.set(name, 30);
+        parts.push(local, data);
+        const central = new Uint8Array(46 + name.length);
+        central.set([0x50, 0x4b, 0x01, 0x02, 20, 0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0], 0);
+        central.set(u32(crc), 16);
+        central.set(u32(data.length), 20);
+        central.set(u32(data.length), 24);
+        central.set(u16(name.length), 28);
+        central.set(u32(offset), 42);
+        central.set(name, 46);
+        centrals.push(central);
+        offset += local.length + data.length;
+      }
+      const centralSize = centrals.reduce((s, c) => s + c.length, 0);
+      const eocd = new Uint8Array(22);
+      eocd.set([0x50, 0x4b, 0x05, 0x06], 0);
+      eocd.set(u16(entries.length), 8);
+      eocd.set(u16(entries.length), 10);
+      eocd.set(u32(centralSize), 12);
+      eocd.set(u32(offset), 16);
+      return new Blob([...parts, ...centrals, eocd], { type: 'application/zip' });
+    }
+
+    $('btn-reload').addEventListener('click', async () => {
+      try {
+        if ('serviceWorker' in navigator) {
+          const regs = await navigator.serviceWorker.getRegistrations();
+          await Promise.all(regs.map(r => r.unregister()));
+        }
+        if ('caches' in window) {
+          const keys = await caches.keys();
+          await Promise.all(keys.map(k => caches.delete(k)));
+        }
+      } catch (_) {}
+      location.reload();
+    });
+
+    if ('serviceWorker' in navigator) {
+      addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js').catch(() => {}));
+    }
+
+    renderPresets();
+    $('edge-val').textContent = $('edge').value + ' px';
+    $('qual-val').textContent = parseFloat($('qual').value).toFixed(2);
+    updateDock();
+  })();
+  </script>
+</body>
+</html>
