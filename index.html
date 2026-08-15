@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
-  <meta name="theme-color" content="#1a1612" />
+  <meta name="theme-color" content="#f3f0e8" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Photo Slim" />
   <meta name="description" content="Shrink gallery photos for sending — smaller pixels and smaller files, on your phone." />
   <link rel="manifest" href="./manifest.webmanifest" />
@@ -15,37 +15,36 @@
   <title>Photo Slim</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Outfit:wght@450;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg0: #1a1612;
-      --bg1: #241e18;
-      --panel: #342b22;
-      --ink: #f3ebe0;
-      --muted: #b5a794;
-      --timber: #c4a574;
-      --timber-hot: #e0c08a;
-      --ok: #7cb87a;
-      --bad: #d9785c;
-      --line: rgba(243, 235, 224, 0.12);
+      --bg: #f3f0e8;
+      --paper: #fffcf7;
+      --ink: #161411;
+      --muted: #5f5a53;
+      --line: #ddd6c8;
+      --accent: #123c32;
+      --ok: #1b6b45;
+      --bad: #b42318;
+      --timber: #123c32;
+      --timber-hot: #161411;
+      --panel: #fffcf7;
       --safe-t: env(safe-area-inset-top, 0px);
       --safe-b: env(safe-area-inset-bottom, 0px);
       --safe-l: env(safe-area-inset-left, 0px);
       --safe-r: env(safe-area-inset-right, 0px);
-      --radius: 18px;
+      --radius: 20px;
       --tap: 48px;
-      --bar-h: 92px;
+      --bar-h: 108px;
     }
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     html, body {
       margin: 0;
       min-height: 100%;
-      background:
-        radial-gradient(120% 80% at 10% -10%, #3a2f24 0%, transparent 55%),
-        linear-gradient(180deg, var(--bg1), var(--bg0));
+      background: var(--bg);
       color: var(--ink);
-      font-family: "Archivo", system-ui, sans-serif;
-      font-weight: 500;
+      font-family: "Outfit", system-ui, sans-serif;
+      font-weight: 450;
     }
     body {
       padding:
@@ -63,42 +62,42 @@
       margin-bottom: 14px; min-height: var(--tap);
     }
     .topbar h1 {
-      margin: 0; flex: 1; font-size: 1.35rem; font-weight: 800; letter-spacing: -0.02em;
+      margin: 0; flex: 1;
+      font-family: "Fraunces", Georgia, serif;
+      font-size: 1.55rem; font-weight: 600; letter-spacing: -0.03em;
     }
     .brand-mark {
-      width: 40px; height: 40px; border-radius: 12px;
-      background: linear-gradient(145deg, #3a3026, #1f1a15);
-      border: 1px solid var(--line);
+      width: 42px; height: 42px; border-radius: 14px;
+      background: var(--paper); border: 1px solid var(--line);
       display: grid; place-items: center; flex-shrink: 0;
     }
     .brand-mark svg { width: 26px; height: 26px; }
 
     .btn {
-      min-height: var(--tap); padding: 0 16px; border-radius: 14px;
-      background: var(--panel); border: 1px solid var(--line); font-weight: 700;
+      min-height: var(--tap); padding: 0 16px; border-radius: 999px;
+      background: var(--paper); border: 1px solid var(--line); font-weight: 600;
     }
     .btn:active { transform: scale(0.98); }
     .btn-primary {
-      background: linear-gradient(180deg, var(--timber-hot), var(--timber));
-      color: #1a140e; border-color: transparent;
+      background: var(--ink); color: var(--paper); border-color: var(--ink);
     }
-    .btn:disabled { opacity: 0.45; pointer-events: none; }
+    .btn:disabled { opacity: 0.4; pointer-events: none; }
     .btn-row { display: flex; flex-wrap: wrap; gap: 10px; }
     .btn-file { display: inline-flex; align-items: center; justify-content: center; }
 
-    .lede { margin: 0 0 14px; color: var(--muted); line-height: 1.4; }
+    .lede { margin: 0 0 16px; color: var(--muted); line-height: 1.45; font-size: 1.05rem; }
     .card {
-      background: rgba(52, 43, 34, 0.72);
+      background: var(--paper);
       border: 1px solid var(--line);
       border-radius: var(--radius);
-      padding: 14px 16px;
+      padding: 16px 18px;
       margin-bottom: 14px;
     }
     .card h3 {
-      margin: 0 0 8px; font-size: 0.78rem; letter-spacing: 0.08em;
+      margin: 0 0 8px; font-size: 0.75rem; letter-spacing: 0.1em;
       text-transform: uppercase; color: var(--muted); font-weight: 700;
     }
-    .help p { margin: 0 0 8px; color: var(--muted); font-size: 0.95rem; line-height: 1.4; }
+    .help p { margin: 0 0 8px; color: var(--muted); font-size: 0.95rem; line-height: 1.45; }
     .help p:last-child { margin-bottom: 0; }
     .help strong { color: var(--ink); }
 
@@ -106,81 +105,81 @@
       display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
     }
     .preset {
-      text-align: left; padding: 12px 12px 10px; border-radius: 14px;
-      background: #16120e; border: 1px solid var(--line); min-height: 72px;
+      text-align: left; padding: 12px 12px 10px; border-radius: 16px;
+      background: var(--bg); border: 1px solid var(--line); min-height: 72px;
     }
     .preset.active {
-      border-color: var(--timber);
-      box-shadow: 0 0 0 1px var(--timber);
+      background: var(--ink); color: var(--paper); border-color: var(--ink);
     }
-    .preset strong { display: block; font-weight: 800; margin-bottom: 4px; }
+    .preset strong { display: block; font-weight: 700; margin-bottom: 4px; }
     .preset span { color: var(--muted); font-size: 0.82rem; line-height: 1.3; }
+    .preset.active span { color: rgba(255,252,247,.72); }
 
     .custom { display: none; margin-top: 12px; }
     .custom.show { display: block; }
     .field { margin-bottom: 10px; }
     .field label {
       display: flex; justify-content: space-between; font-size: 0.88rem;
-      color: var(--muted); font-weight: 700; margin-bottom: 6px;
+      color: var(--muted); font-weight: 600; margin-bottom: 6px;
     }
-    .field input[type="range"] { width: 100%; accent-color: var(--timber); }
+    .field input[type="range"] { width: 100%; accent-color: var(--accent); }
     .field input[type="number"] {
       width: 100%; min-height: 44px; padding: 0 12px; border-radius: 12px;
-      border: 1px solid var(--line); background: #16120e;
+      border: 1px solid var(--line); background: var(--bg);
       font-family: "IBM Plex Mono", ui-monospace, monospace;
     }
 
-    .meter { height: 10px; border-radius: 999px; background: #16120e; overflow: hidden; margin-top: 8px; }
-    .meter > i { display: block; height: 100%; width: 0; background: var(--timber); }
+    .meter { height: 8px; border-radius: 999px; background: var(--bg); overflow: hidden; margin-top: 8px; border: 1px solid var(--line); }
+    .meter > i { display: block; height: 100%; width: 0; background: var(--accent); }
     .meter.hot > i { background: var(--bad); }
-    .meter-lbl { display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--muted); margin-top: 6px; }
+    .meter-lbl { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--muted); margin-top: 6px; }
 
     .grid {
       display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
     }
     .tile {
-      background: #16120e; border: 1px solid var(--line); border-radius: 14px;
+      background: var(--paper); border: 1px solid var(--line); border-radius: 16px;
       overflow: hidden; text-align: left; padding: 0;
     }
-    .tile img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; background: #0d0b09; }
+    .tile img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; background: #ece7dc; }
     .tile .meta { padding: 8px 10px 10px; font-size: 0.75rem; line-height: 1.35; color: var(--muted); }
     .tile .meta b { color: var(--ink); display: block; font-size: 0.82rem; margin-bottom: 2px; }
     .badge {
       display: inline-block; margin-top: 4px; padding: 2px 7px; border-radius: 999px;
       font-size: 0.7rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
-      background: rgba(124,184,122,.18); color: var(--ok);
+      background: #e4f3ea; color: var(--ok);
     }
-    .badge.warn { background: rgba(217,120,92,.18); color: var(--bad); }
+    .badge.warn { background: #fbecea; color: var(--bad); }
 
     .empty {
       text-align: center; color: var(--muted); padding: 28px 12px;
       border: 1px dashed var(--line); border-radius: var(--radius);
+      background: var(--paper);
     }
 
     .dock {
       position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
-      padding: 10px calc(16px + var(--safe-r)) calc(10px + var(--safe-b)) calc(16px + var(--safe-l));
-      background: rgba(26, 22, 18, 0.94);
+      padding: 12px calc(16px + var(--safe-r)) calc(12px + var(--safe-b)) calc(16px + var(--safe-l));
+      background: rgba(243, 240, 232, 0.92);
       border-top: 1px solid var(--line);
       backdrop-filter: blur(10px);
     }
     .dock .sum { font-size: 0.9rem; margin-bottom: 8px; }
-    .dock .sum strong { color: var(--timber-hot); }
-    .ver { margin-top: 10px; color: var(--muted); font-size: 0.75rem; opacity: 0.7; }
+    .dock .sum strong { color: var(--accent); }
+    .ver { margin-top: 10px; color: var(--muted); font-size: 0.75rem; }
 
-    /* Compare overlay */
     #compare {
       display: none; position: fixed; inset: 0; z-index: 40;
-      background: #0d0b09;
+      background: var(--bg);
       padding: calc(10px + var(--safe-t)) 12px calc(12px + var(--safe-b));
       flex-direction: column;
     }
     #compare.open { display: flex; }
     .cmp-top { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-    .cmp-top h2 { margin: 0; flex: 1; font-size: 1.05rem; }
+    .cmp-top h2 { margin: 0; flex: 1; font-family: "Fraunces", Georgia, serif; font-size: 1.15rem; font-weight: 600; }
     .stage {
       position: relative; flex: 1; min-height: 0;
-      border-radius: 16px; overflow: hidden; background: #000;
+      border-radius: 16px; overflow: hidden; background: #111;
       touch-action: none;
     }
     .stage img {
@@ -215,8 +214,8 @@
   <div class="topbar">
     <div class="brand-mark" aria-hidden="true">
       <svg viewBox="0 0 32 32" fill="none">
-        <rect x="5" y="8" width="18" height="16" rx="3" stroke="#c4a574" stroke-width="2"/>
-        <path d="M22 6l5 2-2 5" stroke="#e0c08a" stroke-width="2" stroke-linecap="round"/>
+        <rect x="5" y="8" width="18" height="16" rx="3" stroke="#123c32" stroke-width="2"/>
+        <path d="M22 6l5 2-2 5" stroke="#123c32" stroke-width="2" stroke-linecap="round"/>
       </svg>
     </div>
     <h1>Photo Slim</h1>
@@ -253,6 +252,7 @@
       Add photos
       <input id="file" type="file" accept="image/*" multiple hidden />
     </label>
+    <button type="button" class="btn" id="btn-install">Install</button>
     <button type="button" class="btn" id="btn-clear">Clear</button>
     <button type="button" class="btn" id="btn-reload">Reload</button>
   </div>
@@ -266,7 +266,7 @@
 
   <div id="empty" class="empty">No photos yet. Add from the gallery.</div>
   <div class="grid" id="grid"></div>
-  <p class="ver mono">v1.0.0 · on-device only</p>
+  <p class="ver mono">v1.1.0 · on-device · Android: install, then Share to Photo Slim</p>
 
   <div class="dock">
     <div class="sum" id="dock-sum">Add photos to slim them.</div>
@@ -296,7 +296,7 @@
 
   <script>
   (() => {
-    const APP_VER = '1.0.0';
+    const APP_VER = '1.1.0';
     const PRESETS = {
       chat: { id: 'chat', label: 'Chat', longEdge: 1600, quality: 0.72, keepPixels: false, blurb: 'Fine for messaging.' },
       email: { id: 'email', label: 'Email', longEdge: 2048, quality: 0.80, keepPixels: false, blurb: 'Good on a computer.' },
@@ -550,8 +550,16 @@
     fileInput.addEventListener('change', async () => {
       const files = [...fileInput.files];
       fileInput.value = '';
+      await addFiles(files);
+    });
+
+    async function addFiles(fileList) {
+      const files = [...fileList].filter(file =>
+        (file.type && file.type.startsWith('image/')) ||
+        /\.(jpe?g|png|webp|gif|heic|heif)$/i.test(file.name || '')
+      );
+      if (!files.length) return;
       for (const file of files) {
-        if (!file.type.startsWith('image/') && !/\.(jpe?g|png|webp|gif|heic|heif)$/i.test(file.name)) continue;
         const id = crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random();
         const it = {
           id, file, origBytes: file.size, origW: 0, origH: 0,
@@ -573,7 +581,30 @@
       renderGrid();
       updateDock();
       pumpEncode();
-    });
+    }
+
+    async function ingestShareTarget() {
+      try {
+        const params = new URLSearchParams(location.search);
+        if (params.get('share') !== '1') return;
+        const cache = await caches.open('photo-slim-share-inbox');
+        const meta = await cache.match('inbox');
+        if (!meta) return;
+        const { count } = await meta.json();
+        const files = [];
+        for (let i = 0; i < count; i++) {
+          const resp = await cache.match('item-' + i);
+          if (!resp) continue;
+          const blob = await resp.blob();
+          const name = decodeURIComponent(resp.headers.get('X-Filename') || ('photo-' + i + '.jpg'));
+          files.push(new File([blob], name, { type: blob.type || 'image/jpeg' }));
+          await cache.delete('item-' + i);
+        }
+        await cache.delete('inbox');
+        history.replaceState({}, '', './');
+        await addFiles(files);
+      } catch (_) {}
+    }
 
     $('btn-clear').addEventListener('click', () => {
       encodeGen += 1;
@@ -787,6 +818,44 @@
       location.reload();
     });
 
+    const INSTALL_HINT_IOS = 'On iPhone: tap Share, then Add to Home Screen.';
+    let deferredInstallPrompt = null;
+    function isStandaloneDisplay() {
+      return !!(window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
+        window.navigator.standalone === true;
+    }
+    function isIosLike() {
+      const ua = navigator.userAgent || '';
+      return /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    }
+    async function promptInstallApp() {
+      if (isStandaloneDisplay()) {
+        alert('Already installed. On Android, share photos from Gallery → Photo Slim.');
+        return;
+      }
+      if (deferredInstallPrompt) {
+        deferredInstallPrompt.prompt();
+        try { await deferredInstallPrompt.userChoice; } catch (_) {}
+        deferredInstallPrompt = null;
+        return;
+      }
+      alert(isIosLike() ? INSTALL_HINT_IOS : 'Chrome menu → Install app / Add to Home screen');
+    }
+    $('btn-install')?.addEventListener('click', () => promptInstallApp());
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault();
+      deferredInstallPrompt = e;
+    });
+    window.addEventListener('appinstalled', () => { deferredInstallPrompt = null; });
+    try {
+      if (new URLSearchParams(location.search).get('install') === '1') {
+        const tryInstall = () => promptInstallApp();
+        window.addEventListener('beforeinstallprompt', () => setTimeout(tryInstall, 50), { once: true });
+        setTimeout(tryInstall, 600);
+      }
+    } catch (_) {}
+    if (isStandaloneDisplay() && $('btn-install')) $('btn-install').hidden = true;
+
     if ('serviceWorker' in navigator) {
       addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js').catch(() => {}));
     }
@@ -795,6 +864,7 @@
     $('edge-val').textContent = $('edge').value + ' px';
     $('qual-val').textContent = parseFloat($('qual').value).toFixed(2);
     updateDock();
+    ingestShareTarget();
   })();
   </script>
 </body>

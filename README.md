@@ -26,10 +26,18 @@ Presets: **Chat** (1600 px), **Email** (2048 px), **Screen** (1080 px), **File o
 
 Tap a photo for a wipe before/after. Share the smaller copies, or download / share a zip. Drive is available from the Android share sheet — there is no Google login in the app.
 
+## PWA / share into the app
+
+Photo Slim **is** a PWA. Install it from Chrome (**Install** / Add to Home screen).
+
+**Android:** after install, Photos / Files → Share → **Photo Slim** drops those images into the app. This uses the Web Share Target API. It does **not** work from a normal Chrome tab, and **iOS does not support** receiving shares into a PWA.
+
+**Share out** (the smaller photos or a zip) works from the installed app via the system share sheet.
+
 ## Android
 
 1. Open the Pages URL in **Chrome**
-2. Menu → **Add to Home screen**
+2. Tap **Install** (or menu → Add to Home screen)
 3. Stuck on an old build? tap **Reload**
 
-Version: **1.0.0**
+Version: **1.1.0**
