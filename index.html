@@ -11,7 +11,7 @@
   <meta name="description" content="Shrink gallery photos for sending — smaller pixels and smaller files, on your phone." />
   <link rel="manifest" href="./manifest.webmanifest" />
   <link rel="icon" href="./icon.svg" type="image/svg+xml" />
-  <link rel="apple-touch-icon" href="./icon.svg" />
+  <link rel="apple-touch-icon" href="./icon-192.png" />
   <title>Photo Slim</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -818,46 +818,8 @@
       location.reload();
     });
 
-    const INSTALL_HINT_IOS = 'On iPhone: tap Share, then Add to Home Screen.';
-    let deferredInstallPrompt = null;
-    function isStandaloneDisplay() {
-      return !!(window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
-        window.navigator.standalone === true;
-    }
-    function isIosLike() {
-      const ua = navigator.userAgent || '';
-      return /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-    }
-    async function promptInstallApp() {
-      if (isStandaloneDisplay()) {
-        alert('Already installed. On Android, share photos from Gallery → Photo Slim.');
-        return;
-      }
-      if (deferredInstallPrompt) {
-        deferredInstallPrompt.prompt();
-        try { await deferredInstallPrompt.userChoice; } catch (_) {}
-        deferredInstallPrompt = null;
-        return;
-      }
-      alert(isIosLike() ? INSTALL_HINT_IOS : 'Chrome menu → Install app / Add to Home screen');
-    }
-    $('btn-install')?.addEventListener('click', () => promptInstallApp());
-    window.addEventListener('beforeinstallprompt', e => {
-      e.preventDefault();
-      deferredInstallPrompt = e;
-    });
-    window.addEventListener('appinstalled', () => { deferredInstallPrompt = null; });
-    try {
-      if (new URLSearchParams(location.search).get('install') === '1') {
-        const tryInstall = () => promptInstallApp();
-        window.addEventListener('beforeinstallprompt', () => setTimeout(tryInstall, 50), { once: true });
-        setTimeout(tryInstall, 600);
-      }
-    } catch (_) {}
-    if (isStandaloneDisplay() && $('btn-install')) $('btn-install').hidden = true;
-
     if ('serviceWorker' in navigator) {
-      addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js').catch(() => {}));
+      addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js?v=1.1.1').catch(() => {}));
     }
 
     renderPresets();
@@ -867,5 +829,7 @@
     ingestShareTarget();
   })();
   </script>
+  <script>window.PWA_INSTALL = { slug: 'photo-slim', name: 'Photo Slim' };</script>
+  <script src="./install.js?v=1"></script>
 </body>
 </html>

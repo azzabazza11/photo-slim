@@ -1,10 +1,13 @@
-const CACHE = 'photo-slim-v1.1.0';
+const CACHE = 'photo-slim-v1.1.1';
 const SHARE_INBOX = 'photo-slim-share-inbox';
 const ASSETS = [
   './',
   './index.html',
   './manifest.webmanifest',
-  './icon.svg'
+  './icon.svg',
+  './icon-192.png',
+  './icon-512.png',
+  './install.js'
 ];
 
 self.addEventListener('install', event => {
