@@ -41,8 +41,10 @@
     const slug = appSlug();
     try {
       const ref = document.referrer ? new URL(document.referrer) : null;
-      if (ref && ref.origin === location.origin && slug) {
-        if (!ref.pathname.includes('/' + slug + '/')) return true;
+      if (ref && ref.origin === location.origin) {
+        const p = ref.pathname.replace(/\/+$/, '') || '/';
+        if (p === '/' || p === '/apps' || p.startsWith('/apps/')) return true;
+        if (slug && !ref.pathname.includes('/' + slug + '/')) return true;
       }
     } catch {}
     if (!document.referrer) return true;

@@ -1,4 +1,4 @@
-const CACHE = 'photo-slim-v1.1.1';
+const CACHE = 'photo-slim-v1.1.2';
 const SHARE_INBOX = 'photo-slim-share-inbox';
 const ASSETS = [
   './',

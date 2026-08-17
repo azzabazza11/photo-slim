@@ -40,4 +40,4 @@ Photo Slim **is** a PWA. Install it from Chrome (**Install** / Add to Home scree
 2. Tap **Install** (or menu → Add to Home screen)
 3. Stuck on an old build? tap **Reload**
 
-Version: **1.1.0**
+Version: **1.1.2**
