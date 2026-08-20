@@ -6,14 +6,33 @@
   "desc": "Shrink gallery photos for sending — smaller pixels and files, wipe preview, share or zip. Install on Android to receive shares from Gallery.",
   "accent": "#123c32",
   "icon": "▣",
-  "platforms": ["android", "ios", "desktop"],
+  "iconPath": "icon.svg",
+  "platforms": [
+    "android",
+    "ios",
+    "desktop"
+  ],
   "status": "live",
   "installable": true,
   "desktopUrl": "https://azzabazza11.github.io/photo-slim/",
   "appUrl": "https://azzabazza11.github.io/photo-slim/",
-  "tags": ["photos", "compress", "resize", "pwa", "phone"],
+  "tags": [
+    "photos",
+    "compress",
+    "resize",
+    "pwa",
+    "phone"
+  ],
   "changelog": [
-    {"version": "1.1.2", "date": "2026-08-17", "notes": "Treat the /apps/ hub as a separate PWA when offering install."},
-    {"version": "1.1.1", "date": "2026-08-17", "notes": "Fix PWA install when opened from Aaron's Apps hub."}
+    {
+      "version": "1.1.2",
+      "date": "2026-08-17",
+      "notes": "Treat the /apps/ hub as a separate PWA when offering install."
+    },
+    {
+      "version": "1.1.1",
+      "date": "2026-08-17",
+      "notes": "Fix PWA install when opened from Aaron's Apps hub."
+    }
   ]
 }
